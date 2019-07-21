@@ -1,6 +1,6 @@
 # Deploy GKE cluster
 
-The intention for this project is to deploy a GKE configured, with auto-scaler, over TLS and fully automated. Also, it will deploy the dashboard and Joomla/MariaDB.
+The intention for this project is to deploy a Google Cloud GKE Stack configured, with auto-scaler, over TLS and fully automated. Also, it will deploy the dashboard and Joomla/MariaDB.
 
 ## How to use
 
@@ -23,8 +23,9 @@ or
 
 ```text
 ./deploy_eks_stack.sh Deploy
-2019-07-14 20:31:40 Checking for dependencies
-2019-07-14 20:31:40 Starting to deploy the AWS EKS stack
+2019-07-21 21:37:45 Checking for dependencies
+2019-07-21 21:37:46 Starting to deploy the Google Cloud GKE Stack
+2019-07-21 21:37:46 Runnning terraform init
 ```
 
 ## Getting my Token

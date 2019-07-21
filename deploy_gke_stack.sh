@@ -27,7 +27,7 @@ if [[ -z "${1}" ]]; then
   declare -r TERRAFORM_QUESTION="What action you want to execute?
   1) Deploy
   2) Destroy
-  3) Deploy apps
+  3) App_deploy
   Default: Deploy
   -> "
 
@@ -60,7 +60,6 @@ case "${TERRAFORM_ACTION}" in
     exit
     ;;
   3|app_deploy)
-  3|Deploy appsapp_deploy)
     deploy_apps
     exit
     ;;
