@@ -1,0 +1,47 @@
+function terraform_deploy() {
+  set -e
+  log_msg "Runnning terraform init"
+  terraform init
+  log_msg "Running terraform plan -var project=${PROJECT_NAME} -var gcp_region=${GCP_REGION} -var cluster_name=${CLUSTER_NAME} -out deploy_gke.tfstate"
+  local -r TERRAFORM_PLAN="$(terraform plan -var project=${PROJECT_NAME} -var gcp_region=${GCP_REGION} -var cluster_name=${CLUSTER_NAME} -out deploy_gke.tfstate)"
+  log_msg "${TERRAFORM_PLAN}"
+  set +e ; grep -i 'Plan\:' <<< "$TERRAFORM_PLAN" &> /dev/null
+  if [[ "${?}" -eq 0 ]]; then
+    set -e
+    log_msg "Deploying Google Cloud GKE stack"
+    log_msg "Running terraform apply -auto-approve \"deploy_gke.tfstate\""
+    terraform apply -auto-approve "deploy_gke.tfstate"
+    sleep 15s
+    set +e
+  else
+    log_msg "No changes to apply"
+  fi
+}
+
+function terraform_clean() {
+  log_msg "Cleaning all terraform files"
+  rm -rf .terraform *.tfstate{,.backup}
+}
+
+function terraform_destroy() {
+  log_msg "Destroying Google Cloud GKE Stack"
+  terraform destroy -var project=${PROJECT_NAME} -var gcp_region=${GCP_REGION} -var cluster_name=${CLUSTER_NAME}
+  [[ "${?}" -eq 0 ]] && terraform_clean
+}
+
+function terraform_write_output() {
+  terraform output config_map_auth | tee "${CONFIG_DIR}/config_map_auth.yaml"
+  log_msg "Waiting for the nodes"
+  declare -a K8S_NODES=($(kubectl get nodes -o json | jq -r '.items[] | select(.status.conditions[].reason=="KubeletReady").metadata.name + "__" +( .status.conditions[] | select(.reason=="KubeletReady").type )'))
+  declare -i RETRIES=10
+  while ((RETRIES--)); do
+    if [[ $(awk '{print split($0, a)}' <<< "${K8S_NODES[@]//*__Ready/}") -ne 0 ]] ; then
+      echo "Waiting for nodes to be ready ${K8S_NODES[@]//*__Ready/}"
+      sleep 15s
+      declare -a K8S_NODES=($(kubectl get nodes -o json | jq -r '.items[] | select(.status.conditions[].reason=="KubeletReady").metadata.name + "__" +( .status.conditions[] | select(.reason=="KubeletReady").type )'))
+    else
+      echo "All node are running"
+      break
+    fi
+  done
+}
