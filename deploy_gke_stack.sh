@@ -46,9 +46,6 @@ case "${TERRAFORM_ACTION}" in
     terraform_write_output
     setup_helm
     setup_cluster
-    terraform init
-    terraform plan -out gke_deploy.tfstate
-    terraform apply -auto-approve "gke_deploy.tfstate"
     deploy_apps
     exit
     ;;
