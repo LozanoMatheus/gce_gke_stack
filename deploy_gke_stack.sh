@@ -43,8 +43,8 @@ case "${TERRAFORM_ACTION}" in
     cd terraform_automation/
     terraform_deploy
     setup_kubectl
-    terraform_write_output
     setup_helm
+    terraform_wait_nodes
     setup_cluster
     deploy_apps
     exit

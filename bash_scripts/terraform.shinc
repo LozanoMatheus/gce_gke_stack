@@ -29,8 +29,7 @@ function terraform_destroy() {
   [[ "${?}" -eq 0 ]] && terraform_clean
 }
 
-function terraform_write_output() {
-  terraform output config_map_auth | tee "${CONFIG_DIR}/config_map_auth.yaml"
+function terraform_wait_nodes() {
   log_msg "Waiting for the nodes"
   declare -a K8S_NODES=($(kubectl get nodes -o json | jq -r '.items[] | select(.status.conditions[].reason=="KubeletReady").metadata.name + "__" +( .status.conditions[] | select(.reason=="KubeletReady").type )'))
   declare -i RETRIES=10
