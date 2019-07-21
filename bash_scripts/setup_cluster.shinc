@@ -12,6 +12,18 @@ function setup_helm() {
   kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
   helm init --service-account tiller
   [[ "${?}" -eq 0 ]] && log_msg "helm configured with success" || log_msg "helm configured with erro!!!"
+  declare -a TILLER_PODS="$(kubectl --all-namespaces=true get pods | awk '/tiller/{print $3}')"
+  declare -i RETRIES=10
+  while ((RETRIES--)); do
+    if [[ "${TILLER_PODS//\/*/}" -gt 0 ]] ; then
+      log_msg "Waiting for tiller pods to be ready ${TILLER_PODS}"
+      sleep 15s
+      declare -a TILLER_PODS="$(kubectl --all-namespaces=true get pods | awk '/tiller/{print $3}')"
+    else
+      log_msg "Tiller is running"
+      break
+    fi
+  done
 }
 
 function deploy_apps() {
