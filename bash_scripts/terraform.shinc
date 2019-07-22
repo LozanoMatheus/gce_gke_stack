@@ -24,6 +24,9 @@ function terraform_clean() {
 }
 
 function terraform_destroy() {
+  log_msg "Deleting all DNS records"
+  gcloud dns record-sets import --zone ${DNS_ZONES_NAME} --delete-all-existing /dev/null
+  sleep 15s
   log_msg "Destroying Google Cloud GKE Stack"
   terraform destroy -var project=${PROJECT_NAME} -var gcp_region=${GCP_REGION} -var cluster_name=${CLUSTER_NAME}
   [[ "${?}" -eq 0 ]] && terraform_clean
@@ -39,7 +42,7 @@ function terraform_wait_nodes() {
       sleep 15s
       declare -a K8S_NODES=($(kubectl get nodes -o json | jq -r '.items[] | select(.status.conditions[].reason=="KubeletReady").metadata.name + "__" +( .status.conditions[] | select(.reason=="KubeletReady").type )'))
     else
-      echo "All node are running"
+      echo "All nodes are running"
       break
     fi
   done

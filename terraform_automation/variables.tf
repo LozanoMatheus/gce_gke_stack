@@ -1,25 +1,30 @@
 variable "project" {
   description = "Project ID"
   type        = "string"
-  default   = "kubernetes-learning-232815"
 }
 
 variable "cluster_name" {
   description = "Cluster name"
   type        = "string"
-  default        = "mlozano"
 }
 
 variable "my_public_ip" {
   description = "My public IP address"
   type        = "string"
-  default        = "163.158.212.238"
+}
+
+variable "dns_zones_name" {
+  description = "Public DNS zone"
+  type        = "string"
+  default = {
+    "joomla"        = "joomla.lozanomatheus.com"
+    "k8s-dashboard" = "k8s-dashboard.lozanomatheus.com"
+  }
 }
 
 variable "gcp_region" {
   description = "GCP Region"
   type        = "string"
-  default        = "europe-west1"
 }
 
 variable "subnet_ip_range" {
