@@ -65,8 +65,11 @@ function deploy_apps() {
 }
 
 function setup_cluster() {
+  
   log_msg "Creating users"
   kubectl apply -f "${CONFIG_DIR}/dashboard_users.yaml"
+
+  sleep 10s
 
   log_msg "Deploying Kubernetes Dashboard"
   helm install --name kubernetes-dashboard stable/kubernetes-dashboard \
@@ -83,4 +86,22 @@ function setup_cluster() {
     --set ingress.tls[0].hosts[0]=kubernetes-dashboard.lozanomatheus.com \
     --set rbac.create=true \
     --namespace=kube-system
+
+  sleep 10s
+
+  log_msg "Deploy external-dns"
+  helm install --name external-dns \
+    --namespace default \
+    --set provider=google \
+    --set google.project=${PROJECT_NAME} \
+    --set policy=sync \
+    --set publishInternalServices=true \
+    --set registry=txt \
+    --set txtOwnerId=k8s \
+    --set domainFilters={lozanomatheus.com} \
+    --set zoneIdFilters={gke-external-dns} \
+    --set rbac.create=true \
+    --set interval=30s \
+    --set metrics.enabled=true \
+    stable/external-dns
 }

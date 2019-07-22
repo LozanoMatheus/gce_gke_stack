@@ -45,6 +45,8 @@ case "${TERRAFORM_ACTION}" in
     setup_kubectl
     setup_helm
     terraform_wait_nodes
+    log_msg "Deploying apps"
+    sleep 60s
     setup_cluster
     deploy_apps
     exit
@@ -57,6 +59,9 @@ case "${TERRAFORM_ACTION}" in
     exit
     ;;
   3|app_deploy)
+    log_msg "Deploying apps"
+    sleep 60s
+    setup_cluster
     deploy_apps
     exit
     ;;
