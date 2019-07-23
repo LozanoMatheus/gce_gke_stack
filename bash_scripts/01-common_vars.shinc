@@ -1,0 +1,13 @@
+declare -xr  PROJECT_BASEDIR="$(dirname "${BASH_SOURCE[0]}" | pwd)"
+declare -xr  CONFIG_DIR="${PROJECT_BASEDIR}/config_files"
+declare -r   TERRAFORM_VERSION="${TERRAFORM_VERSION:-'0.12.4'}"
+declare -r   LOG_FILE="/tmp/${0//.sh/}_$(date +'%Y%m%d').log"
+declare -lr  KERNEL_NAME="$(uname -s)"
+declare -xr  PROJECT_NAME="${PROJECT_NAME:-"kubernetes-learning-232815"}"
+declare -xr  GCP_REGION="${GCP_REGION:-"europe-west1"}"
+declare -lar DNS_ZONES_NAME="(${DNS_ZONE_NAME:-"joomla" "k8s-dashboard"})"
+declare -xr  CLUSTER_NAME="${CLUSTER_NAME:-"mlozano"}"
+declare -xr  TF_VAR_my_public_ip="${MY_PUBLIC_IP:-"$(curl -s ifconfig.co)"}"
+declare -xr  TF_VAR_ssh_key_name="${SSH_KEY_NAME:-"ssh_key_eks_workers"}"
+declare -xr  TF_VAR_ssh_key_path="${SSH_KEY_PATH:-"${PROJECT_BASEDIR}/keys"}"
+declare -ir  RETRIES=10
