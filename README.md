@@ -12,11 +12,10 @@ Example:
 ./deploy_eks_stack.sh
 2019-07-14 19:07:24 Checking for dependencies
 What action you want to execute?
-1) Deploy
-2) Destroy
-3) Deploy apps
-Default: Deploy
--> 1
+  1) Deploy     3) Setup
+  2) Destroy    4) App_deploy
+  Default: Deploy
+  -> 1
 ```
 
 or
