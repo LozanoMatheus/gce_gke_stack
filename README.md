@@ -42,5 +42,5 @@ kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | awk
 
 All endpoints will be exposed via sidecar, via HTTP over TLS.
 
-* Kubernetes Dashboard - https://kubernetes-dashboard.lozanomatheus.com
+* Kubernetes Dashboard - https://k8s-dashboard.lozanomatheus.com
 * Joomla app - https://joomla.lozanomatheus.com
