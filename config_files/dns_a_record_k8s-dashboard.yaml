@@ -1,0 +1,7 @@
+---
+kind: dns#resourceRecordSet
+name: k8s-dashboard.lozanomatheus.com.
+rrdatas:
+- 130.211.51.247
+ttl: 15
+type: A
