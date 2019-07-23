@@ -14,11 +14,20 @@ variable "my_public_ip" {
 }
 
 variable "dns_zones_name" {
-  description = "Public DNS zone"
-  type        = "string"
+  description = "Public DNS zone name"
+  type        = "map"
   default = {
-    "joomla"        = "joomla.lozanomatheus.com"
-    "k8s-dashboard" = "k8s-dashboard.lozanomatheus.com"
+    "joomla"        = "joomla"
+    "k8s-dashboard" = "k8s-dashboard"
+  }
+}
+
+variable "dns_name" {
+  description = "Public DNS name"
+  type        = "map"
+  default = {
+    "joomla"        = "joomla.lozanomatheus.com."
+    "k8s-dashboard" = "k8s-dashboard.lozanomatheus.com."
   }
 }
 
