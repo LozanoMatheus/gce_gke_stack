@@ -11,3 +11,10 @@ declare -xr  TF_VAR_my_public_ip="${MY_PUBLIC_IP:-"$(curl -s ifconfig.co)"}"
 declare -xr  TF_VAR_ssh_key_name="${SSH_KEY_NAME:-"ssh_key_eks_workers"}"
 declare -xr  TF_VAR_ssh_key_path="${SSH_KEY_PATH:-"${PROJECT_BASEDIR}/keys"}"
 declare -ir  RETRIES=10
+
+## Pod Autoscaler
+declare -ir POD_CPU_PERCENT="${POD_CPU_PERCENT:-"60"}"
+declare -ir MIN_PODS="${MIN_PODS:-"2"}"
+declare -ir MAX_PODS="${MAX_PODS:-"5"}"
+declare -ir JOOMLA_MIN_PODS="${JOOMLA_MIN_PODS:-"1"}"
+declare -ir JOOMLA_MAX_PODS="${JOOMLA_MAX_PODS:-"3"}"

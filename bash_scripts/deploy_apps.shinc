@@ -18,12 +18,17 @@ function deploy_letsencrypt() {
     --set ingressShim.defaultIssuerName=letsencrypt-prod \
     --set ingressShim.defaultIssuerKind=ClusterIssuer
   [[ $? -eq 0 ]] && log_msg "Let's Encrypt / Cert Manager deployed with success" || error_exit "Fail to deploy Let's Encrypt / Cert Manager"
+  sleep 15s ; kubectl -n cert-manager autoscale deployment cert-manager            --cpu-percent=${POD_CPU_PERCENT} --min=${MIN_PODS} --max=${MAX_PODS}
+  sleep 15s ; kubectl -n cert-manager autoscale deployment cert-manager-cainjector --cpu-percent=${POD_CPU_PERCENT} --min=${MIN_PODS} --max=${MAX_PODS}
+  sleep 15s ; kubectl -n cert-manager autoscale deployment cert-manager-webhook    --cpu-percent=${POD_CPU_PERCENT} --min=${MIN_PODS} --max=${MAX_PODS}
 }
 
 function deploy_ingress() {
   log_msg "Deploying Ingress"
   helm install --name ingress stable/nginx-ingress
   [[ $? -eq 0 ]] && log_msg "Ingress deployed with success" || error_exit "Fail to deploy Ingress"
+  sleep 15s ; kubectl -n default autoscale deployment ingress-nginx-ingress-controller      --cpu-percent=${POD_CPU_PERCENT} --min=${MIN_PODS} --max=${MAX_PODS}
+  sleep 15s ; kubectl -n default autoscale deployment ingress-nginx-ingress-default-backend --cpu-percent=${POD_CPU_PERCENT} --min=${MIN_PODS} --max=${MAX_PODS}
 }
 
 function deploy_check_public_ip() {
@@ -70,7 +75,7 @@ function deploy_joomla() {
   JOOMLA_SECRET="$(head -n 1 /dev/urandom | base64 | tr -dc '[:alnum:]' | cut -c -24)"
   log_msg "Your JOOMLA_SECRET is: \"${JOOMLA_SECRET}\""
   log_msg "Deploying Joomla"
-  sleep 60s ; helm install --name joomla stable/joomla \
+  sleep 30s ; helm install --name joomla stable/joomla \
     --set joomlaPassword=${JOOMLA_SECRET} \
     --set mariadb.rootUser.password=${JOOMLA_SECRET} \
     --set service.type=ClusterIP \
@@ -81,11 +86,12 @@ function deploy_joomla() {
     --set ingress.hosts[0].tlsSecret=joomla-tls \
     --set ingress.hosts[0].name=joomla.lozanomatheus.com
   [[ $? -eq 0 ]] && log_msg "Joomla deployed with success" || error_exit "Fail to deploy Joomla"
+  sleep 15s ; kubectl -n default autoscale deployment joomla --cpu-percent=${POD_CPU_PERCENT} --min=${JOOMLA_MIN_PODS} --max=${JOOMLA_MAX_PODS}
 }
 
 function deploy_k8s_dashboard() {
   log_msg "Deploying Kubernetes Dashboard"
-  sleep 60s ; helm install --name k8s-dashboard stable/kubernetes-dashboard \
+  sleep 30s ; helm install --name k8s-dashboard stable/kubernetes-dashboard \
     --set resources.limits.cpu=200m \
     --set service.type=ClusterIP \
     --set service.externalPort=443 \
@@ -100,11 +106,12 @@ function deploy_k8s_dashboard() {
     --set rbac.create=true \
     --namespace=kube-system
   [[ $? -eq 0 ]] && log_msg "Kubernetes Dashboard deployed with success" || error_exit "Fail to deploy Kubernetes Dashboard"
+  sleep 15s ; kubectl -n kube-system autoscale deployment k8s-dashboard-kubernetes-dashboard --cpu-percent=${POD_CPU_PERCENT} --min=${MIN_PODS} --max=${MAX_PODS}
 }
 
 function deploy_autoscaler() {
   log_msg "Deploying Autoscaler"
-  sleep 60s ; helm install --name cluster-autoscaler stable/cluster-autoscaler \
+  sleep 30s ; helm install --name cluster-autoscaler stable/cluster-autoscaler \
     --namespace kube-system \
     --set autoDiscovery.clusterName=mlozano \
     --set autoDiscovery.enabled=true \
@@ -114,4 +121,5 @@ function deploy_autoscaler() {
     --set rbac.create=true \
     --set "autoscalingGroupsnamePrefix[0].name=default-node-pool,autoscalingGroupsnamePrefix[0].maxSize=10,autoscalingGroupsnamePrefix[0].minSize=1"
   [[ $? -eq 0 ]] && log_msg "Autoscaler deployed with success" || error_exit "Fail to deploy Autoscaler"
+  sleep 15s ; kubectl -n kube-system autoscale deployment cluster-autoscaler-gce-cluster-autoscaler --cpu-percent=${POD_CPU_PERCENT} --min=${MIN_PODS} --max=${MAX_PODS}
 }
